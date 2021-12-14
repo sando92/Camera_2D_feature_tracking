@@ -39,7 +39,7 @@ We evaluated three parameters:
 
 We want to know what is the best combination of detector and descriptor to find a maximum number of keypoints in a minimum time.
 
-Based on attached results, the top three combination of detector/descriptor is the following:
+Based on attached results (performance_data folder), the top three combination of detector/descriptor is the following:
 - 1 -   FAST detector + BRIEF descriptor. 35,8 matches per image in 2 ms in average.
 - 2 -   FAST detector + ORB descriptor. 35,2 matches per image in 4 ms in average.
 - 3.1 - BRISK detector + BRIEF descriptor. 28,2 matches per image found in 45 ms in average.
