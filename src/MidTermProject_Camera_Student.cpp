@@ -103,13 +103,6 @@ int main(int argc, const char *argv[])
         cv::Rect vehicleRect(535, 180, 180, 150); // cx = 535, cy = 180, w = 180, h = 150
         if (bFocusOnVehicle)
         ***REMOVED***
-            int i = 0;
-            for (cv::KeyPoint kp: keypoints) ***REMOVED***
-                if (vehicleRect.contains(kp.pt)) ***REMOVED***
-                    i++;
-            ***REMOVED***
-        ***REMOVED***
-
             for (int j = 0; j < keypoints.size(); j++) ***REMOVED***
                 if (!vehicleRect.contains(keypoints[j].pt)) ***REMOVED***
                     keypoints.erase(keypoints.begin() + j);
