@@ -7,7 +7,7 @@ set(CMAKE_CXX_FLAGS, "$***REMOVED***CXX_FLAGS***REMOVED***")
 
 project(camera_fusion)
 
-find_package(OpenCV 4.1 REQUIRED)
+find_package(OpenCV 4.5 REQUIRED)
 
 include_directories($***REMOVED***OpenCV_INCLUDE_DIRS***REMOVED***)
 link_directories($***REMOVED***OpenCV_LIBRARY_DIRS***REMOVED***)
