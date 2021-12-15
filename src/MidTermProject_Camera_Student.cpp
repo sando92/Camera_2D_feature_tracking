@@ -6,7 +6,7 @@
 #include <vector>
 #include <cmath>
 #include <limits>
-***REMOVED***
+#include <numeric>
 #include <opencv2/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -14,13 +14,13 @@
 #include <opencv2/xfeatures2d.hpp>
 
 #include "dataStructures.h"
-***REMOVED***
+#include "matching2D.hpp"
 
-***REMOVED***
+using namespace std;
 
 /* MAIN PROGRAM */
 int main(int argc, const char *argv[])
-***REMOVED***
+{
 
     /* INIT VARIABLES AND DATA STRUCTURES */
 
@@ -38,15 +38,15 @@ int main(int argc, const char *argv[])
     // misc
     int dataBufferSize = 2;       // no. of images which are held in memory (ring buffer) at the same time
     vector<DataFrame> dataBuffer; // list of data frames which are held in memory at the same time
-    bool bVis = false;        ***REMOVED***
+    bool bVis = false;            // visualize results
 
     
     // Create log table
     vector<std::vector<double>> v_log; // time, # kp, # kp vehicle, mean, var, std dev of neighbourhood size, time desc, time match, # matched kp, 
     std::vector<double> v;
-    for (int i=0; i < 9; i++) ***REMOVED***
+    for (int i=0; i < 9; i++) {
         v_log.push_back(v);
-***REMOVED***
+    }
     /// Create log file
     std::ofstream log_file;
     log_file.open ("log.txt");
@@ -54,7 +54,7 @@ int main(int argc, const char *argv[])
     /* MAIN LOOP OVER ALL IMAGES */
 
     for (size_t imgIndex = 0; imgIndex <= imgEndIndex - imgStartIndex; imgIndex++)
-    ***REMOVED***
+    {
         /* LOAD IMAGE INTO BUFFER */
 
         log_file << "--------- Image n°" << imgIndex << " ---------" << endl;
@@ -73,9 +73,9 @@ int main(int argc, const char *argv[])
         DataFrame frame;
         frame.cameraImg = imgGray;
         dataBuffer.push_back(frame);
-        if (dataBuffer.size() > dataBufferSize) ***REMOVED***
+        if (dataBuffer.size() > dataBufferSize) {
             dataBuffer.erase(dataBuffer.begin());
-    ***REMOVED***
+        }
 
         cout << "#1 : LOAD IMAGE INTO BUFFER done, buffer size is " << dataBuffer.size() << endl;
 
@@ -86,62 +86,62 @@ int main(int argc, const char *argv[])
         string detectorType = "FAST"; // SHITOMASI, HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
 
         if (detectorType.compare("SHITOMASI") == 0)
-        ***REMOVED***
+        {
             detKeypointsShiTomasi(keypoints, imgGray, log_file, v_log, false);
-    ***REMOVED***
+        }
         else if (detectorType.compare("HARRIS") == 0)
-        ***REMOVED***
+        {
             detKeypointsHarris(keypoints, imgGray, log_file, v_log,  false);
-    ***REMOVED***
+        }
         else 
-        ***REMOVED***
+        {
             detKeypointsModern(keypoints, imgGray, detectorType, log_file, v_log,  false);
-    ***REMOVED***
+        }
 
         // only keep keypoints on the preceding vehicle, this is an approximation
         bool bFocusOnVehicle = true;
         cv::Rect vehicleRect(535, 180, 180, 150); // cx = 535, cy = 180, w = 180, h = 150
         if (bFocusOnVehicle)
-        ***REMOVED***
-            for (int j = 0; j < keypoints.size(); j++) ***REMOVED***
-                if (!vehicleRect.contains(keypoints[j].pt)) ***REMOVED***
+        {
+            for (int j = 0; j < keypoints.size(); j++) {
+                if (!vehicleRect.contains(keypoints[j].pt)) {
                     keypoints.erase(keypoints.begin() + j);
                     j--;
-            ***REMOVED***
-        ***REMOVED***
+                }
+            }
             log_file << "Found " << keypoints.size() << " points in vehicle area." << endl;
             v_log[2].push_back(keypoints.size());
-    ***REMOVED***
+        }
 
         // optional : limit number of keypoints (helpful for debugging and learning)
         bool bLimitKpts = true;
         if (bLimitKpts)
-        ***REMOVED***
+        {
             int maxKeypoints = 50;
 
             if (detectorType.compare("SHITOMASI") == 0)
-            ***REMOVED*** // there is no response info, so keep the first 50 as they are sorted in descending quality order
+            { // there is no response info, so keep the first 50 as they are sorted in descending quality order
                 keypoints.erase(keypoints.begin() + maxKeypoints, keypoints.end());
-        ***REMOVED***
+            }
             cv::KeyPointsFilter::retainBest(keypoints, maxKeypoints);
             cout << " NOTE: Keypoints have been limited!" << endl;
-    ***REMOVED***
+        }
 
         // push keypoints and descriptor for current frame to end of data buffer
         (dataBuffer.end() - 1)->keypoints = keypoints;
 
         // Variance of keypoints size
         double mean_kp_size = 0;
-        for (cv::KeyPoint kp: keypoints) ***REMOVED***
+        for (cv::KeyPoint kp: keypoints) {
             mean_kp_size += kp.size;
-    ***REMOVED***
+        }
         mean_kp_size = mean_kp_size / keypoints.size();
 
         double sum_squared_dist_to_mean = 0;
-        for (cv::KeyPoint kp: keypoints) ***REMOVED***
+        for (cv::KeyPoint kp: keypoints) {
             float dist = kp.size - mean_kp_size;
             sum_squared_dist_to_mean += dist * dist;
-    ***REMOVED***
+        }
         double var_neighbourhood_size = sum_squared_dist_to_mean / keypoints.size();
 
         log_file << " Mean of keypoint size " << mean_kp_size << ", variance " << var_neighbourhood_size << endl;
@@ -162,17 +162,17 @@ int main(int argc, const char *argv[])
         cout << "#3 : EXTRACT DESCRIPTORS done" << endl;
 
         if (dataBuffer.size() > 1) // wait until at least two images have been processed
-        ***REMOVED***
+        {
 
             /* MATCH KEYPOINT DESCRIPTORS */
 
             vector<cv::DMatch> matches;
             string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
-            if (descriptorType == "SIFT") ***REMOVED***
+            if (descriptorType == "SIFT") {
                 string descriptorType = "DES_HOG";
-        ***REMOVED*** else ***REMOVED***
+            } else {
                 string descriptorType = "DES_BINARY"; // DES_BINARY, DES_HOG
-        ***REMOVED***
+            }
             string selectorType = "SEL_KNN";       // SEL_NN, SEL_KNN
 
             matchDescriptors((dataBuffer.end() - 2)->keypoints, (dataBuffer.end() - 1)->keypoints,
@@ -185,8 +185,8 @@ int main(int argc, const char *argv[])
             cout << "#4 : MATCH KEYPOINT DESCRIPTORS done" << endl;
 
             // visualize matches between current and previous image
-        ***REMOVED***
-            ***REMOVED***
+            if (bVis)
+            {
                 cv::Mat matchImg = ((dataBuffer.end() - 1)->cameraImg).clone();
                 cv::drawMatches((dataBuffer.end() - 2)->cameraImg, (dataBuffer.end() - 2)->keypoints,
                                 (dataBuffer.end() - 1)->cameraImg, (dataBuffer.end() - 1)->keypoints,
@@ -198,21 +198,21 @@ int main(int argc, const char *argv[])
                 cv::namedWindow(windowName, 7);
                 cv::imshow(windowName, matchImg);
                 cout << "Press key to continue to next image" << endl << endl;
-        ***REMOVED*** // wait for key to be pressed
-        ***REMOVED***
-    ***REMOVED***
+                cv::waitKey(0); // wait for key to be pressed
+            }
+        }
 
-***REMOVED*** // eof loop over all images
+    } // eof loop over all images
 
     // TODO change it to csv file creation
-    for (std::vector<double> vv: v_log) ***REMOVED***
+    for (std::vector<double> vv: v_log) {
         log_file << endl;
         log_file << endl;
-        for (double dd: vv) ***REMOVED***
+        for (double dd: vv) {
             log_file << dd << " + ";
-    ***REMOVED***
-***REMOVED***
+        }
+    }
 
     log_file.close();
     return 0;
-***REMOVED***
+}

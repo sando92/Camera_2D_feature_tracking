@@ -23,7 +23,7 @@ void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
 void detKeypointsShiTomasi(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std::ofstream &log_file, std::vector<std::vector<double>> &v_log, bool bVis=false);
 void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std::string detectorType, std::ofstream &log_file, std::vector<std::vector<double>> &v_log, bool bVis=false);
 void descKeypoints(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descriptors, std::string descriptorType, std::ofstream &log_file, std::vector<std::vector<double>> &v_log);
-***REMOVED***
-***REMOVED*** std::ofstream &log_file, std::vector<std::vector<double>> &v_log);
+void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::KeyPoint> &kPtsRef, cv::Mat &descSource, cv::Mat &descRef,
+                      std::vector<cv::DMatch> &matches, std::string descriptorType, std::string matcherType, std::string selectorType, std::ofstream &log_file, std::vector<std::vector<double>> &v_log);
 
 #endif /* matching2D_hpp */
