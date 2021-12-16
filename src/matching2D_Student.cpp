@@ -49,7 +49,7 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
         try {
             matcher->knnMatch(descSource, descRef, knn_matches, 2); // finds the 2 best matches
         } catch (cv::Exception e) {
-            cout << "KnnMatch error: " << e.err << endl; 
+            cout << "Knn Match error: " << e.err << endl; 
         }
         t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
         log_file << " (KNN) with n=" << knn_matches.size() << " matches in " << 1000 * t / 1.0 << " ms" << endl;
